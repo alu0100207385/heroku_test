@@ -1,0 +1,100 @@
+{% extends 'baseIntern.html' %}
+
+{% block user %}
+    {{ user.first_name }} {{ user.last_name }}
+{% endblock %}
+
+{% block content %}
+<div id="section">
+	<div class="row" data-equalizer>
+		<div class="small-12 large-4 columns downpadded" data-equalizer-watch>
+			<div class="row">
+				<div class="small-12 large-12 columns">
+					<a href="/users/{{ data.user.username }}">
+						{% if data.picture != None %}
+							<img id="" class="pic" src="/media/{{ data.picture.picture }}">
+						{% else %}
+							<img id="" class="pic" src="/static/files/profileDefault.png">
+						{% endif %}
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="small-12 large-8 columns" data-equalizer-watch>
+			<div class="row">
+				<h3>
+					{% if link == None %}
+						<div class="small-10 large-10 columns panel">
+							{{ data.user.first_name }} {{ data.user.last_name }}
+						</div>
+						<div class="small-2 large-2 columns panel center">
+							<form name="fform" action="{% url "user_app.views.follow" %}" method="POST">
+								{% csrf_token %}
+								<label  class="hidden"><input name="followname" type="text" value="{{ data.user.username }}"></label>
+								<span data-tooltip title="Follow">
+									<a onclick="fform.submit()">
+										<i class="fa fa-users"></i>
+									</a>
+								</span>
+							</form>
+						</div>
+					{% elif link == False %}
+						<div class="small-12 large-12 columns panel">
+							{{ data.user.first_name }} {{ data.user.last_name }}
+						</div>
+					{% else %}
+					<div class="small-10 large-10 columns panel">
+						{{ data.user.first_name }} {{ data.user.last_name }}
+					</div>
+					<div class="small-2 large-2 columns panel center">
+						<form name="dform" action="{% url "user_app.views.unfollow" %}" method="POST">
+							{% csrf_token %}
+							<label  class="hidden"><input name="delname" type="text" value="{{ data.user.id }}"></label>
+							<span data-tooltip title="unFollow">
+								<a onclick="dform.submit()">
+									<i class="fa fa-ban"></i>
+								</a>
+							</span>
+						</form>
+					</div>
+					{% endif %}
+				</h3>
+			</div>
+			{% if post.entries == 0 %}
+			<div class="row panel">
+				<div class="small-10 large-10 columns">
+					<h3>This user hasn't any post</h3>
+				</div>
+			</div>
+			{% else %}
+			<div class="row" data-equalizer>
+				<div class="small-12 large-12 columns panel"  data-equalizer-watch>
+					<div class="row">
+						<div class="small-10 large-10 columns">
+							<p class="small right">{{ post.last.date }}</p>
+							<h3><strong>{{ post.last.post }}</strong></h3>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+	<div class="row padded">
+		<div class="small-12 large-12 columns">
+			{% if post.entries != 0 %}
+			<div class="row">
+				{% for post in post.posts %}
+					<div class="row panel">
+						<div class="small-10 large-11 columns">
+							<p class="small right">{{ post.date }}</p>
+							<p>{{ post.post }}</p>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends 'baseIntern.html' %}
+
+{% block user %}
+    {{ user.first_name }} {{ user.last_name }}
+{% endblock %}
+
+{% block content %}
+<div id="section">
+	<div class="row" data-equalizer>
+		<div class="small-12 large-4 columns downpadded" data-equalizer-watch>
+			<div class="row">
+				<div class="small-12 large-12 columns">
+					<a href="/home">
+						{% if picture != None %}
+							<img id="" class="pic" src="/media/{{ picture.picture }}">
+						{% else %}
+							<img id="" class="pic" src="/static/files/profileDefault.png">
+						{% endif %}
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="small-12 large-8 columns" data-equalizer-watch>
+			<div class="row">
+				<div class="small-4 large-4 columns panel">
+					<a href="{% url "app.views.following" %}">Following <span class="square-box">{{ count.following }}</span></a>
+				</div>
+				<div class="small-4 large-4 columns panel">
+					<a href="{% url "app.views.followers" %}">Followers <span class="square-box">{{ count.followers }}</span></a>
+				</div>
+				<div class="small-4 large-4 columns panel">
+					<span data-tooltip title="See all your posts">
+						<a href="{% url "app.views.post" %}">Post <span class="square-box">{{ posts.entries }}</span></a>
+					</span>
+				</div>
+			</div>
+			{% if posts.entries == 0 %}
+			<div class="row panel">
+				<div id="down{{ posts.last.id }}" class="small-10 large-10 columns">
+					<h3><strong>Welcome To CANSocial</strong> your last post appear here!</h3>
+				</div>
+			</div>
+			{% else %}
+			<div class="row" data-equalizer>
+				<div class="small-12 large-12 columns panel"  data-equalizer-watch>
+					<div class="row">
+						<div id="down{{ posts.last.id }}" class="small-10 large-10 columns">
+							<p class="small right">{{ posts.last.date }}</p>
+							<h3><strong>{{ posts.last.post }}</strong></h3>
+						</div>
+						<div id="up{{ posts.last.id }}" class="small-10 large-10 columns hidden" >
+							<form method="post" action="{% url "post.views.updatePost" %}">
+							{% csrf_token %}
+								<label class="hidden"><input class="" name="id" type="text" value="{{ posts.last.id }}"></label>
+								<textarea name="post" rows="1" placeholder="Post" maxlength="240" required>{{ posts.last.post }}</textarea>
+						</div>
+						<div class="small-2 large-2 columns">
+							<a href="javascript:popChange({{ posts.last.id }})"><span data-tooltip title="Modify"><i class="fa fa-edit"></i></span></a>
+							<a href="javascript:popDelete({{ posts.last.id }})"><span class="right" data-tooltip title="Delete"><i class="fa fa-trash-o"></i></span></a>
+								<label id="label{{ posts.last.id }}" class="hidden">
+									<span data-tooltip title="Save">
+										<input class="hidden" type="submit" value="Save">
+										<i class="fa fa-save"></i>
+									</span>
+									<a href="">
+										<span class="right" data-tooltip title="Discart">
+											<i class="fa fa-reply"></i>
+										</span>
+									</a>
+								</label>
+							</form>
+						</div>
+						<div id="del{{ posts.last.id }}" class="small-12 large-12 columns panel warning alert-box hidden del">
+							<form method="post" action="{% url "post.views.deletePost" %}">
+							{% csrf_token %}
+								<label class="hidden"><input class="" name="id" type="text" value="{{ posts.last.id }}"></label>
+								<p>Proceed to delete this post, Are you sure?</p>
+								<input type="submit" class="button radius alert right" value="Continue">
+								<a href="" class=""><input type="button" class="button radius right" value="Cancel"></a>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+	<div class="row padded">
+		<div class="small-12 large-12 columns">
+			{% if posts.entries == 0 %}
+			<div class="row" data-equalizer>
+				<div class="small-12 large-12 columns"  data-equalizer-watch>
+					<h3><strong>Create the first Post here</strong></h3>
+					<p>In this section will appear post that you publish</p>
+				</div>
+				<div class="row panel">
+					<form id="postSubmit" method="post" action="{% url "post.views.createPost" %}">
+					{% csrf_token %}
+						<div class="small-12 large-12 columns">
+							<textarea id="postArea" name="post" rows="2" placeholder="Write here and press Enter for create a new Post" maxlength="240" required></textarea>
+							<input class="hidden" type="submit" value="Save">
+						</div>
+					</form>
+				</div>
+			</div>
+			{% else %}
+			<div class="row">
+				<div class="row panel">
+					<form id="postSubmit" method="post" action="{% url "post.views.createPost" %}">
+					{% csrf_token %}
+						<div class="small-12 large-12 columns">
+							<textarea id="postArea" name="post" rows="2" placeholder="Write here and press Enter for create a new Post" maxlength="240" required></textarea>
+							<input class="hidden" type="submit" value="Save">
+						</div>
+					</form>
+				</div>
+				{% for post in posts.posts %}
+					<div class="row panel">
+						<div id="down{{ post.id }}" class="small-10 large-11 columns">
+							<p class="small right">{{ post.date }}</p>
+							<p>{{ post.post }}</p>
+						</div>
+						<div id="up{{ post.id }}" class="small-10 large-11 columns hidden" >
+							<textarea form="formUpdate" name="post" rows="2" placeholder="Post" maxlength="240" required>{{ post.post }}</textarea>
+						</div>
+						<div class="small-2 large-1 columns">
+							<a href="javascript:popChange({{ post.id }})"><span data-tooltip title="Modify"><i class="fa fa-edit"></i></span></a>
+							<a href="javascript:popDelete({{ post.id }})"><span class="right" data-tooltip title="Delete"><i class="fa fa-trash-o"></i></span></a>
+							<form id="formUpdate" method="post" action="{% url "post.views.updatePost" %}">
+							{% csrf_token %}
+								<label class="hidden"><input class="" name="id" type="text" value="{{ post.id }}"></label>
+								<label id="label{{ post.id }}" class="hidden">
+									<span data-tooltip title="Save">
+										<input class="hidden" type="submit" value="Save">
+										<i class="fa fa-save"></i>
+									</span>
+									<a href="">
+										<span class="right" data-tooltip title="Discart">
+											<i class="fa fa-reply"></i>
+										</span>
+									</a>
+								</label>
+							</form>
+						</div>
+						<div id="del{{ post.id }}" class="small-12 large-12 columns panel warning alert-box hidden">
+							<form method="post" action="{% url "post.views.deletePost" %}">
+							{% csrf_token %}
+								<label class="hidden"><input class="" name="id" type="text" value="{{ post.id }}"></label>
+								<p>Proceed to delete this post, Are you sure?</p>
+								<input type="submit" class="button radius alert right" value="Continue">
+								<a href="" class=""><input type="button" class="button radius right" value="Cancel"></a>
+							</form>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+	function popChange(id){
+		$("#down"+id).addClass("hidden");
+		$("#up"+id).removeClass("hidden");
+		$("#label"+id).removeClass("hidden");
+	}
+	function popDelete(id){
+		$("#del"+id).removeClass("hidden");
+	}
+	$(document).ready(function(){
+		$("#postArea").keyup(function(event) {
+		    if (event.which == 13) {
+		        event.preventDefault();
+		        $("#postSubmit").submit();
+		    }
+		});
+	});  
+</script>
+{% endblock %}

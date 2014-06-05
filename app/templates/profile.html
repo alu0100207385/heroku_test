@@ -1,0 +1,179 @@
+{% extends "baseIntern.html" %}
+
+{% block user %}
+    {{ user.first_name }} {{ user.last_name }}
+{% endblock %}
+
+{% block content %}
+<div id="section">
+	<div class="row">
+		<div class="small-12 large-4 columns">
+			<form id="uploadForm" action="{% url "user_app.views.savePicture" %}" method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+					<label class="pointer" for="photo" style="width:207px;">
+						<div class="row">
+							<div class="small-12 columns">
+								{% if picture != None %}
+									<img id="" class="pic" src="/media/{{ picture.picture }}">
+								{% else %}
+									<img id="" class="pic" src="/static/files/profileDefault.png">
+								{% endif %}
+							</div>
+							<div class="small-12 columns">
+								<p class="button success">Upload New Picture</p>
+							</div>
+						</div>
+						<input onchange="this.form.submit()" class="hidden" type="file" name="upload" id="photo">
+					</label>
+			</form>
+		</div>
+		<div class="small-12 large-8 columns">
+			<div class="row">
+				<div class="small-12 large-12 columns">
+					{% if data.error == True %}
+					<div data-alert class="alert-box alert">
+			            {{ data.username }} is already in use, please select a different username
+			            <a href="#" class="close">&times;</a>
+			        </div>
+			        {% elif data.error == False %}
+			        <div data-alert class="alert-box success">
+			            Your profile has been updated
+			            <a href="#" class="close">&times;</a>
+			        </div>
+			        {% endif %}
+				</div>
+			</div>
+			<div class="panel radius">
+				<form method="post" action="{% url "user_app.views.updateProfile" %}">
+				{% csrf_token %}
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							<h2>Public Profile</h2>
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							{{ form.username.label_tag }}
+	                    	<span class="small">Actual: {{ user.username }}</span>
+							<input type="text" name="username" placeholder="Username: {{ user.username }}">
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							{{ form.email.label_tag }}
+	                    	<span class="small">Actual: {{ user.email }}</span>
+							<input type="text" name="email" placeholder="Email: {{ user.email }}">
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							{{ form.first_name.label_tag }}
+	                    	<span class="small">Actual: {{ user.first_name }}</span>
+							<input type="text" name="first_name" placeholder="First Name: {{ user.first_name }}">
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							{{ form.last_name.label_tag }}
+	                    	<span class="small">Actual: {{ user.last_name }}</span>
+							<input type="text" name="last_name" placeholder="Last Name: {{ user.last_name }}">
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-6 large-6 columns right">
+							<input class="button success radius right" type="submit" value="Save Changes">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="small-12 large-8 columns right">
+			<div class="row">
+				<div class="small-12 large-12 columns">
+					{% if error == True %}
+					<div data-alert class="alert-box alert">
+			            Password not equal, please checks
+			            <a href="#" class="close">&times;</a>
+			        </div>
+			        {% elif error == False %}
+			        <div data-alert class="alert-box success">
+			            Password has been updated
+			            <a href="#" class="close">&times;</a>
+			        </div>
+			        {% endif %}
+				</div>
+			</div>
+			<div class="panel radius">
+				<form method="post" action="{% url "user_app.views.updatePassword" %}">
+				{% csrf_token %}
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							<h2>Change Password</h2>
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							<label for="id_new_password">New Password</label>
+		                    <input id="id_new_password" maxlength="30" name="new_password" type="password" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							<label for="id_re_password">Confirm New Password</label>
+		                    <input id="id_re_password" maxlength="30" name="confirm_password" type="password" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-6 large-6 columns right">
+							<input class="button success radius right" type="submit" value="Update Password">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="small-12 large-8 columns right">
+			<div class="row">
+				<div class="small-12 large-12 columns">
+					{% if error == True %}
+					<div data-alert class="alert-box alert">
+			            Password not equal, please checks
+			            <a href="#" class="close">&times;</a>
+			        </div>
+			        {% elif error == False %}
+			        <div data-alert class="alert-box success">
+			            Password has been updated
+			            <a href="#" class="close">&times;</a>
+			        </div>
+			        {% endif %}
+				</div>
+			</div>
+			<div class="panel radius alert-box warning">
+				<form method="post" action="{% url "user_app.views.deleteProfile" %}">
+				{% csrf_token %}
+					<div class="row">
+						<div class="small-12 large-12 columns">
+							<h2>Delete Account</h2>
+							<h5>Once you delete your account, there is no going back. Please be certain.</h5>
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-6 large-6 columns right">
+							<input id="delete" class="button alert radius right" type="button" value="Delete">
+							
+							<input id="confirm" class="button success radius right hidden" type="submit" value="Confirm">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+	$("#delete").click(function(){
+		$("#confirm").removeClass('hidden');
+	});
+</script>
+{% endblock %}
